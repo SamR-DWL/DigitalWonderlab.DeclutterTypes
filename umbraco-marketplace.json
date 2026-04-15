@@ -1,0 +1,23 @@
+{
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "AuthorDetails": {
+    "Name": "Digital Wonderlab",
+    "Description": "As a proud Certified B Corporation®, we are passionate about amplifying the voices and visions of purpose-driven start-ups, SMEs, not-for-profits, and global enterprises.",
+    "Url": "https://digitalwonderlab.com",
+    "Contributors": [
+      {
+        "Name": "Sam Robinson"
+      }
+    ],
+    "SyncContributorsFromRepository": false
+  },
+  "Category": "Developer Tools",
+  "IssueTrackerUrl": "https://github.com/SamR-DWL/DigitalWonderlab.DeclutterTypes/issues",
+  "Description": "Identify unused document types and data types across your Umbraco instance. Scan your published content and media to find types that are no longer in use, helping you keep your Umbraco installation clean and maintainable.",
+  "LicenseTypes": [ "Free" ],
+  "PackageType": "Package",
+  "Screenshots": [],
+  "Tags": [ "Developer Tools" ],
+  "Title": "Digital Wonderlab's Declutter Types",
+  "VersionDependencyMode": "SemVer"
+}

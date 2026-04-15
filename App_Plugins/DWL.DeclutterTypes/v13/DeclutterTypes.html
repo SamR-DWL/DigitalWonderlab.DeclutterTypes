@@ -1,0 +1,69 @@
+<div class="declutter-types" ng-controller="DeclutterTypesController as vm">
+    <umb-box>
+        <umb-box-header title="Tidy">
+        </umb-box-header>
+        <umb-box-content>
+            <div class="introduction">
+                <div class="beta-warning"><p>It should be noted that this tool is in Beta, based on our knowledge of umbraco and how to find properties and in use document/data types - if you note a specific type and would like us to investigate, please raise an issue in GitHub</p></div>
+                <p>This tool will scan your <strong>published</strong> content for in use document types and data types. It will also scan your media content for in use data types and properties.</p>
+                <p>Running this tool will show a list of data types and document types that it has found not in use, but this is not an exhaustive list. </p>
+                <p>There are still types that may be used and should be verified before you delete them, this tool is a guide and some settings or customised views may still be used but marked as unsed by this tool, so delete with caution.</p>
+                <p>Once run you will see your unused type below, there is a link to open a new tab to the item the tool has marked. <br /> It is then up to you to verify if this is in use, see if it is logically tied to another that you know to be in use, or Umbraco has found something the tool has not like customised views or settings.</p>
+                <p>When you have determined that it is safe to delete, you can then remove that document type or data type manually.</p>
+                <p>The Save In Tool Toggle will allow you to save the results in tool so you do not have to rerun the tool on every visit.</p>
+                <hr />
+            </div>
+            <div class="button-container">
+                <button class="btn btn-success"
+                        ng-click="runTidy($event)" id="run-btn">
+                    Run
+                </button>
+                <uui-toggle pristine="" name="save-response" ng-on-change="vm.saveResponseToggle()" ng-attr-checked="{{vm.saveResponse ? 'checked' : undefined}} label="label">Save in Tool</uui-toggle>
+            </div>
+            <div class="loading-container">
+                <div class="loader js-data-loader"></div>
+                <div class="loader-text js-data-loader-text">Loading...</div>
+            </div>
+        </umb-box-content>
+    </umb-box>
+
+    <umb-box ng-show="(vm.documentTypes && vm.documentTypes.length) || (vm.dataTypes && vm.dataTypes.length) || (vm.thirdPartyDataTypes && vm.thirdPartyDataTypes.length) || (vm.umbracoDataTypes && vm.umbracoDataTypes.length)">
+        
+        <div class="results-box">
+            <div class="results-box__title"><h3>Results</h3> </div>
+                <div class="results-box__row"><p>Document Types not used : <strong>{{vm.documentTypesNotUsed}}</strong></p> </div>
+                <div class="results-box__row"><p>Data Types not used : <strong>{{vm.dataTypesNotUsed}}</strong></p></div>
+                <div class="results-box__row"><p>Third Party Data Types (unknown if used) : <strong>{{vm.thirdPartyDataTypesNotUsed}}</strong></p></div>
+                <div class="results-box__row"><p>Umbraco Types : <strong>{{vm.umbracoDataTypesNotUsed}}</strong></p></div>
+            </div>
+</umb-box>
+    <umb-box ng-show="vm.documentTypes && vm.documentTypes.length">
+        <umb-box-header title="Document Types">
+        </umb-box-header>
+        <umb-box-content>
+            <umb-accordion-tree nodes="vm.documentTypesTree"></umb-accordion-tree>
+        </umb-box-content>
+    </umb-box>
+    <umb-box ng-show="vm.dataTypes && vm.dataTypes.length">
+        <umb-box-header title="Data Types">
+        </umb-box-header>
+        <umb-box-content>
+            <umb-accordion-tree nodes="vm.dataTypesTree"></umb-accordion-tree>
+        </umb-box-content>
+    </umb-box>
+    <umb-box ng-show="vm.thirdPartyDataTypes && vm.thirdPartyDataTypes.length">
+        <umb-box-header title="Third Party Data Types">
+        </umb-box-header>
+        <p class="third-party-caveat">While this tool has verified whether the property has a value that is being used by a property, we cannot be sure if the lack of a value is intentional. The entries below should be treated with care.</p>
+        <umb-box-content>
+            <umb-accordion-tree nodes="vm.thirdPartyDataTypesTree"></umb-accordion-tree>
+        </umb-box-content>
+    </umb-box>
+    <umb-box ng-show="vm.umbracoDataTypes && vm.umbracoDataTypes.length">
+        <umb-box-header title="Umbraco Data Types">
+        </umb-box-header>
+        <umb-box-content>
+            <umb-accordion-tree nodes="vm.umbracoDataTypesTree"></umb-accordion-tree>
+        </umb-box-content>
+    </umb-box>
+</div>

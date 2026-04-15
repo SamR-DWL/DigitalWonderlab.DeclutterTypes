@@ -1,0 +1,26 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <DeclutterTypesContentFilesPath>$(MSBuildThisFileDirectory)..\content\App_Plugins\DWL.DeclutterTypes\**\*</DeclutterTypesContentFilesPath>
+  </PropertyGroup>
+
+  <Target Name="CopyDeclutterTypesAssets" BeforeTargets="Build">
+    <ItemGroup>
+      <DeclutterTypesContentFiles Include="$(DeclutterTypesContentFilesPath)" />
+    </ItemGroup>
+    <Message Text="Copying DeclutterTypes files: $(DeclutterTypesContentFilesPath) - #@(DeclutterTypesContentFiles->Count()) files" Importance="high" />
+    <Copy
+      SourceFiles="@(DeclutterTypesContentFiles)"
+      DestinationFiles="@(DeclutterTypesContentFiles->'$(MSBuildProjectDirectory)\App_Plugins\DWL.DeclutterTypes\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="ClearDeclutterTypesAssets" BeforeTargets="Clean">
+    <ItemGroup>
+      <DeclutterTypesDir Include="$(MSBuildProjectDirectory)\App_Plugins\DWL.DeclutterTypes\" />
+    </ItemGroup>
+    <Message Text="Clearing DeclutterTypes assets" Importance="high" />
+    <RemoveDir Directories="@(DeclutterTypesDir)" />
+  </Target>
+
+</Project>

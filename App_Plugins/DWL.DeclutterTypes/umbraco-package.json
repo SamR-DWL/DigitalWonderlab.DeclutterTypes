@@ -1,0 +1,24 @@
+{
+  "$schema": "../../umbraco-package-schema.json",
+  "name": "DeclutterTypes",
+  "version": "1.0.0",
+  "extensions": [
+    {
+      "type": "dashboard",
+      "alias": "DWL.DeclutterTypes",
+      "name": "Declutter Types",
+      "element": "/App_Plugins/DWL.DeclutterTypes/declutter-types.js",
+      "elementName": "declutter-types-element",
+      "meta": {
+        "label": "Declutter Types",
+        "pathname": "declutter-types"
+      },
+      "conditions": [
+        {
+          "alias": "Umb.Condition.SectionAlias",
+          "match": "Umb.Section.Content"
+        }
+      ]
+    }
+  ]
+}
