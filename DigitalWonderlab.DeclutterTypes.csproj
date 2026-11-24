@@ -7,7 +7,7 @@
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <IsPackable>true</IsPackable>
     <PackageId>DigitalWonderlab.DeclutterTypes</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
     <Authors>Digital Wonderlab</Authors>
     <Company>Digital Wonderlab</Company>
     <Description>Identify unused document types and data types across your Umbraco instance. Supports Umbraco 13 - 17.</Description>

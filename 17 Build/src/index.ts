@@ -10,6 +10,7 @@ interface TypeUsage {
     name: string;
     path: string[];
     type: string;
+    detail?: string | null;
 }
 
 interface TypeUsageResult {
@@ -17,6 +18,7 @@ interface TypeUsageResult {
     documentTypes: number;
     umbracoDataTypes: number;
     thirdPartyDataTypes: number;
+    unpublishedOnlyTypes?: number;
 }
 
 interface TypeUsageResponse {
@@ -25,16 +27,18 @@ interface TypeUsageResponse {
     documentTypes: TypeUsage[];
     umbracoDataTypes: TypeUsage[];
     thirdPartyDataTypes: TypeUsage[];
+    unpublishedOnlyTypes?: TypeUsage[];
     typeUsageResult: TypeUsageResult;
 }
 
-type SectionKey = 'documentTypes' | 'dataTypes' | 'thirdPartyDataTypes' | 'umbracoDataTypes';
+type SectionKey = 'documentTypes' | 'dataTypes' | 'thirdPartyDataTypes' | 'umbracoDataTypes' | 'unpublishedOnlyTypes';
 
 const SECTION_LABELS: Record<SectionKey, string> = {
     documentTypes: 'Document Types',
     dataTypes: 'Data Types',
     thirdPartyDataTypes: 'Third Party Data Types',
     umbracoDataTypes: 'Umbraco Data Types',
+    unpublishedOnlyTypes: 'Used Only in Unpublished Content',
 };
 
 @customElement('declutter-types-element')
@@ -46,6 +50,7 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
     @state() private _dataTypes: TypeUsage[] = [];
     @state() private _thirdPartyDataTypes: TypeUsage[] = [];
     @state() private _umbracoDataTypes: TypeUsage[] = [];
+    @state() private _unpublishedOnlyTypes: TypeUsage[] = [];
     @state() private _counts: TypeUsageResult = { dataTypes: 0, documentTypes: 0, umbracoDataTypes: 0, thirdPartyDataTypes: 0 };
     @state() private _openSections: Set<SectionKey> = new Set();
 
@@ -89,6 +94,7 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
         this._dataTypes = data.dataTypes;
         this._thirdPartyDataTypes = data.thirdPartyDataTypes;
         this._umbracoDataTypes = data.umbracoDataTypes;
+        this._unpublishedOnlyTypes = data.unpublishedOnlyTypes ?? [];
         this._counts = data.typeUsageResult;
         this._hasResults = true;
     }
@@ -115,7 +121,8 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
             <uui-box headline="Declutter Types" class="mb-1">
                 <div class="intro">
                     <p class="beta-notice">This tool is in Beta. Based on our knowledge of Umbraco and how to find in-use properties and document/data types — if you note a specific type and would like us to investigate, please raise an issue in <a href="https://github.com/SamR-DWL/DigitalWonderlab.DeclutterTypes/issues" target="_blank">GitHub</a>.</p>
-                    <p>This tool will scan your <strong>published</strong> content for in-use document types and data types. It will also scan your media content for in-use data types and properties.</p>
+                    <p>This tool scans all of your content, media and members for in-use document types and data types. That includes unpublished content and unpublished changes, and blocks wherever they are stored: Block List, Block Grid, blocks in a rich text editor, nested blocks and Nested Content.</p>
+                    <p>Types that are only used by unpublished content or unpublished changes are listed separately, as deleting them would delete or break that content.</p>
                     <p>Running this tool will show a list of data types and document types that it has found not in use. This is not an exhaustive list — some settings or customised views may still be used but marked as unused, so delete with caution.</p>
                     <p>The items will be organised in the manner they are in Umbraco, reflecting the hierarchy and structure of your document and data types. Each item below will contain a link to their place in Umbraco for you to do a final check before deleting.</p>
                     <hr />
@@ -151,6 +158,7 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
                     <p>Data Types not used: <strong>${this._counts.dataTypes}</strong></p>
                     <p>Third Party Data Types (unknown if used): <strong>${this._counts.thirdPartyDataTypes}</strong></p>
                     <p>Umbraco Types: <strong>${this._counts.umbracoDataTypes}</strong></p>
+                    <p>Used only in unpublished content: <strong>${this._counts.unpublishedOnlyTypes ?? 0}</strong></p>
                 </div>
             </uui-box>
 
@@ -158,6 +166,7 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
             ${this._renderSection('dataTypes', this._dataTypes)}
             ${this._renderSection('thirdPartyDataTypes', this._thirdPartyDataTypes)}
             ${this._renderSection('umbracoDataTypes', this._umbracoDataTypes)}
+            ${this._renderSection('unpublishedOnlyTypes', this._unpublishedOnlyTypes)}
         `;
     }
 
@@ -184,12 +193,18 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
                         ${key === 'thirdPartyDataTypes' ? html`
                             <p class="caveat">While this tool has verified whether the property has a value, we cannot be sure if the lack of a value is intentional. Treat these entries with care.</p>
                         ` : nothing}
+                        ${key === 'unpublishedOnlyTypes' ? html`
+                            <p class="caveat">These are in use, but only by unpublished content or unpublished changes. Deleting them would delete or break that content.</p>
+                        ` : nothing}
                         ${[...groups.entries()].map(([group, groupItems]) => html`
                             <div class="group">
                                 <div class="group-label">${group}</div>
                                 ${groupItems.map(item => html`
                                     <div class="item-card">
-                                        <strong>${item.name}</strong>
+                                        <div class="item-text">
+                                            <strong>${item.name}</strong>
+                                            ${item.detail ? html`<span class="item-detail">${item.detail}</span>` : nothing}
+                                        </div>
                                         <span class="item-id">ID: ${item.id}</span>
                                         <a href="${this._getEditUrl(item)}" target="_blank">Open in Umbraco</a>
                                     </div>
@@ -287,6 +302,17 @@ export class DeclutterTypesElement extends UmbElementMixin(LitElement) {
 
         .item-card:hover {
             background: var(--uui-color-surface-emphasis);
+        }
+
+        .item-text {
+            display: flex;
+            flex-direction: column;
+            gap: var(--uui-size-space-1);
+        }
+
+        .item-detail {
+            color: var(--uui-color-text-alt);
+            font-size: 0.85em;
         }
 
         .item-id {
